@@ -147,57 +147,53 @@ jobs:
       # Importación de Threagile Threat Model (TP14) a DefectDojo
       # -------------------------------------------------------------
       - name: Importar Threagile Threat Model a DefectDojo
-        uses: defectdojo/import-scan-action@v1
-        with:
-          defectdojo_url: ${{ env.DEFECTDOJO_URL }}
-          api_key: ${{ env.DEFECTDOJO_TOKEN }}
-          product_id: ${{ env.PRODUCT_ID }}
-          scan_type: 'Generic CI/CD Audit'
-          reports_path: 'reports-json/threagile-results.json'
-          engagement_name: 'CI/CD Automated Security Audits'
-          auto_create_context: true
+        run: |
+          curl -s -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+            -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
+            -F "product_id=${{ env.PRODUCT_ID }}" \
+            -F "scan_type=Generic Findings Import" \
+            -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "auto_create_context=true" \
+            -F "file=@reports-json/threagile-results.json" || true
 
       # -------------------------------------------------------------
       # Importación de Semgrep JSON (TP15) a DefectDojo
       # -------------------------------------------------------------
       - name: Importar Semgrep a DefectDojo
-        uses: defectdojo/import-scan-action@v1
-        with:
-          defectdojo_url: ${{ env.DEFECTDOJO_URL }}
-          api_key: ${{ env.DEFECTDOJO_TOKEN }}
-          product_id: ${{ env.PRODUCT_ID }}
-          scan_type: 'Semgrep JSON Report'
-          reports_path: 'reports-json/semgrep-results.json'
-          engagement_name: 'CI/CD Automated Security Audits'
-          auto_create_context: true
+        run: |
+          curl -s -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+            -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
+            -F "product_id=${{ env.PRODUCT_ID }}" \
+            -F "scan_type=Semgrep JSON Report" \
+            -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "auto_create_context=true" \
+            -F "file=@reports-json/semgrep-results.json" || true
 
       # -------------------------------------------------------------
       # Importación de Trivy JSON (TP16) a DefectDojo
       # -------------------------------------------------------------
       - name: Importar Trivy a DefectDojo
-        uses: defectdojo/import-scan-action@v1
-        with:
-          defectdojo_url: ${{ env.DEFECTDOJO_URL }}
-          api_key: ${{ env.DEFECTDOJO_TOKEN }}
-          product_id: ${{ env.PRODUCT_ID }}
-          scan_type: 'Trivy Scan'
-          reports_path: 'reports-json/trivy-container-results.json'
-          engagement_name: 'CI/CD Automated Security Audits'
-          auto_create_context: true
+        run: |
+          curl -s -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+            -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
+            -F "product_id=${{ env.PRODUCT_ID }}" \
+            -F "scan_type=Trivy Scan" \
+            -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "auto_create_context=true" \
+            -F "file=@reports-json/trivy-container-results.json" || true
 
       # -------------------------------------------------------------
       # Importación de Gitleaks JSON (TP17) a DefectDojo
       # -------------------------------------------------------------
       - name: Importar Gitleaks a DefectDojo
-        uses: defectdojo/import-scan-action@v1
-        with:
-          defectdojo_url: ${{ env.DEFECTDOJO_URL }}
-          api_key: ${{ env.DEFECTDOJO_TOKEN }}
-          product_id: ${{ env.PRODUCT_ID }}
-          scan_type: 'Gitleaks Scan'
-          reports_path: 'reports-json/gitleaks-report.json'
-          engagement_name: 'CI/CD Automated Security Audits'
-          auto_create_context: true
+        run: |
+          curl -s -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+            -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
+            -F "product_id=${{ env.PRODUCT_ID }}" \
+            -F "scan_type=Gitleaks Scan" \
+            -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "auto_create_context=true" \
+            -F "file=@reports-json/gitleaks-report.json" || true
 
       - name: Resumen de Centralización en GitHub
         run: |
