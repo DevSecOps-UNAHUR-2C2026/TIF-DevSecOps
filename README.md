@@ -1,11 +1,11 @@
 # Trabajo Práctico 18: Centralización de Vulnerabilidades con OWASP DefectDojo
 
-## 🎯 Objetivo
+##  Objetivo
 Implementar y configurar **OWASP DefectDojo** como plataforma centralizada para la orquestación, seguimiento y gestión del ciclo de vida de vulnerabilidades dentro del pipeline de DevSecOps, automatizando la ingesta de reportes generados en las etapas de CI/CD.
 
 ---
 
-## 🛠️ Herramientas Integradas
+## Herramientas Integradas
 El pipeline normaliza y exporta los hallazgos en formatos compatibles (`JSON`/`XML`) para ser subidos mediante la API v2 de DefectDojo:
 
 - **Threat Modeling:** Threagile
@@ -16,7 +16,7 @@ El pipeline normaliza y exporta los hallazgos en formatos compatibles (`JSON`/`X
 
 ---
 
-## 🚀 Pipeline y Automatización (`.github/workflows/defectdojo-ci.yml`)
+##  Pipeline y Automatización (`.github/workflows/defectdojo-ci.yml`)
 El flujo de trabajo automatizado realiza las siguientes acciones:
 1. **Ejecución de escaneos:** Corre cada herramienta de seguridad sobre el código base, dependencias y contenedor.
 2. **Generación de artefactos:** Exporta los reportes de vulnerabilidades en sus formatos estándar.
@@ -24,7 +24,7 @@ El flujo de trabajo automatizado realiza las siguientes acciones:
 
 ---
 
-## ⚙️ Variables y Secretos Requeridos
+## ⚙️Variables y Secretos Requeridos
 Para la ejecución del pipeline se configuran en el repositorio:
 - `DEFECTDOJO_URL`: URL base de la instancia de DefectDojo.
 - `DEFECTDOJO_API_KEY`: Token de autenticación para la API v2.
@@ -32,4 +32,10 @@ Para la ejecución del pipeline se configuran en el repositorio:
 
 ---
 
-## 📋 Estructura del Rep
+##  Estructura del Repositorio
+- `.github/workflows/`: Workflows de GitHub Actions (`defectdojo-ci.yml`).
+- `backend/`: Código de la aplicación de prueba.
+- `scripts/`: Scripts auxiliares de importación y parseo de reportes.
+- `django-DefectDojo/`: Submódulo o configuración de despliegue local de la plataforma.
+- Archivos de configuración: `.gitleaks.toml`, `.trivyignore`, `threagile.yaml`.
+
