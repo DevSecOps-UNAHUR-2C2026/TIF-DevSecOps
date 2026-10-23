@@ -1,0 +1,16 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "devops-portfolio:latest",
+  "Results": [
+    {
+      "Target": "devops-portfolio:latest",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2023-45853",
+          "PkgName": "zlib1g",
+          "Severity": "HIGH"
+        }
+      ]
+    }
+  ]
+}

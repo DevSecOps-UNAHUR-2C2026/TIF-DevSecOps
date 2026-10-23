@@ -1,0 +1,10 @@
+{
+  "findings": [
+    {
+      "title": "Unencrypted Communication Traffic to Database",
+      "description": "Traffic between Backend Flask App and PostgreSQL is not encrypted via TLS.",
+      "severity": "Medium",
+      "cwe": 319
+    }
+  ]
+}

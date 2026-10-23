@@ -1,0 +1,23 @@
+{
+  "results": [
+    {
+      "check_id": "python.flask.security.audit.debug-enabled.debug-enabled",
+      "path": "backend/app.py",
+      "start": {"line": 45, "col": 5, "offset": 100},
+      "end": {"line": 45, "col": 28, "offset": 123},
+      "extra": {
+        "message": "Detected Flask app with debug=True.",
+        "severity": "WARNING",
+        "lines": "app.run(host='0.0.0.0', debug=True)",
+        "metadata": {
+          "cwe": ["CWE-489"]
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "paths": {
+    "scanned": ["backend/app.py"]
+  },
+  "version": "1.50.0"
+}
