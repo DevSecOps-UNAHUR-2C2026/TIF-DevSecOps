@@ -155,7 +155,7 @@ jobs:
             -F "scan_type=Generic Findings Import" \
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
-            -F "file=@reports-json/threagile-results.json" || true
+            -F "file=@reports-json/threagile-results.json"
 
       # -------------------------------------------------------------
       # Importación de Semgrep JSON (TP15) a DefectDojo
@@ -168,7 +168,7 @@ jobs:
             -F "scan_type=Semgrep JSON Report" \
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
-            -F "file=@reports-json/semgrep-results.json" || true
+            -F "file=@reports-json/semgrep-results.json"
 
       # -------------------------------------------------------------
       # Importación de Trivy JSON (TP16) a DefectDojo
@@ -181,7 +181,7 @@ jobs:
             -F "scan_type=Trivy Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
-            -F "file=@reports-json/trivy-container-results.json" || true
+            -F "file=@reports-json/trivy-container-results.json"
 
       # -------------------------------------------------------------
       # Importación de Gitleaks JSON (TP17) a DefectDojo
@@ -194,7 +194,7 @@ jobs:
             -F "scan_type=Gitleaks Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
-            -F "file=@reports-json/gitleaks-report.json" || true
+            -F "file=@reports-json/gitleaks-report.json"
 
       - name: Resumen de Centralización en GitHub
         run: |
