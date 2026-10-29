@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del código
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Configurar Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -38,7 +38,7 @@ jobs:
           docker save ${{ env.DOCKER_IMAGE }}:${{ github.sha }} -o build-artifacts/app-image.tar
 
       - name: Publicar Artefacto de Imagen
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: docker-image-artifact
           path: build-artifacts/app-image.tar
@@ -53,7 +53,7 @@ jobs:
     needs: [build-and-package]
     steps:
       - name: Checkout del código (Historial completo para Gitleaks)
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -61,7 +61,7 @@ jobs:
         run: mkdir -p reports-json
 
       - name: Descargar Artefacto de Imagen
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v4
         with:
           name: docker-image-artifact
           path: build-artifacts
@@ -71,7 +71,7 @@ jobs:
           docker load -i build-artifacts/app-image.tar
 
       - name: Instalar Helm CLI
-        uses: azure/setup-helm@v5
+        uses: azure/setup-helm@v4
         with:
           version: 'v3.13.0'
 
@@ -122,7 +122,8 @@ jobs:
       # Publicar Artefactos de Reportes JSON para la Fase 3
       # -------------------------------------------------------------
       - name: Publicar Artefacto de Reportes JSON
-        uses: actions/upload-artifact@v5
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: security-json-reports
           path: reports-json/
@@ -138,7 +139,7 @@ jobs:
     if: always()
     steps:
       - name: Descargar Reportes JSON
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v4
         with:
           name: security-json-reports
           path: reports-json
@@ -210,10 +211,10 @@ jobs:
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout del código
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Descargar Artefacto de Imagen
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v4
         with:
           name: docker-image-artifact
           path: build-artifacts
