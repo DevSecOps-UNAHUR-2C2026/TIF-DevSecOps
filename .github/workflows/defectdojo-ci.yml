@@ -118,9 +118,6 @@ jobs:
           sudo mv gitleaks /usr/local/bin/
           gitleaks detect --source . --report-format json --report-path reports-json/gitleaks-report.json || true
 
-      # Nota: Asegurate de tener también el step que genera zap-results.xml
-      # y lo guarda en la carpeta reports-json en esta fase o en una anterior.
-
       # -------------------------------------------------------------
       # Publicar Artefactos
       # -------------------------------------------------------------
@@ -156,7 +153,7 @@ jobs:
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
             -F "product_name=${{ env.PRODUCT_NAME }}" \
-            -F "scan_type=Threagile" \
+            -F "scan_type=Generic Findings Import" \
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
             -F "file=@reports-json/threagile-results.json"
