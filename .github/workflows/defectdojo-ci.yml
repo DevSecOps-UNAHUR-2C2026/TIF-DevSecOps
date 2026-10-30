@@ -12,7 +12,7 @@ env:
   K8S_NAMESPACE: devops-portfolio
   DEFECTDOJO_URL: ${{ secrets.DEFECTDOJO_URL }}
   DEFECTDOJO_TOKEN: ${{ secrets.DEFECTDOJO_API_KEY }}
-  PRODUCT_NAME: "Notes App"                                # <-- CAMBIO CLAVE ACÁ
+  PRODUCT_NAME: "Notes App"
 
 jobs:
   # =========================================================================
@@ -45,7 +45,7 @@ jobs:
           retention-days: 1
 
   # =========================================================================
-  # FASE 2: AUDITORÍAS DE CIBERSEGURIDAD Y GENERACIÓN DE REPORTES JSON
+  # FASE 2: AUDITORÍAS DE CIBERSEGURIDAD Y GENERACIÓN DE REPORTES
   # =========================================================================
   security-audits:
     name: "Fase 2: Auditorías (Threagile, Semgrep, Trivy & Gitleaks JSON)"
@@ -57,7 +57,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Crear carpeta para reportes JSON
+      - name: Crear carpeta para reportes
         run: mkdir -p reports-json
 
       - name: Descargar Artefacto de Imagen
@@ -118,10 +118,13 @@ jobs:
           sudo mv gitleaks /usr/local/bin/
           gitleaks detect --source . --report-format json --report-path reports-json/gitleaks-report.json || true
 
+      # Nota: Asegurate de tener también el step que genera zap-results.xml
+      # y lo guarda en la carpeta reports-json en esta fase o en una anterior.
+
       # -------------------------------------------------------------
       # Publicar Artefactos
       # -------------------------------------------------------------
-      - name: Publicar Artefacto de Reportes JSON
+      - name: Publicar Artefacto de Reportes
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -153,7 +156,7 @@ jobs:
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
             -F "product_name=${{ env.PRODUCT_NAME }}" \
-            -F "scan_type=Generic Findings Import" \
+            -F "scan_type=Threagile" \
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
             -F "file=@reports-json/threagile-results.json"
@@ -199,6 +202,20 @@ jobs:
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
             -F "file=@reports-json/gitleaks-report.json"
+
+      # -------------------------------------------------------------
+      # Importación de OWASP ZAP XML (Faltante agregado)
+      # -------------------------------------------------------------
+      - name: Importar OWASP ZAP a DefectDojo
+        run: |
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+            -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
+            -H "ngrok-skip-browser-warning: true" \
+            -F "product_name=${{ env.PRODUCT_NAME }}" \
+            -F "scan_type=ZAP Scan" \
+            -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "auto_create_context=true" \
+            -F "file=@reports-json/zap-results.xml"
 
       - name: Resumen de Centralización en GitHub
         run: |
