@@ -149,8 +149,9 @@ jobs:
       # -------------------------------------------------------------
       - name: Importar Threagile Threat Model a DefectDojo
         run: |
-          curl -s -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
+            -H "ngrok-skip-browser-warning: true" \
             -F "product_id=${{ env.PRODUCT_ID }}" \
             -F "scan_type=Generic Findings Import" \
             -F "engagement_name=CI/CD Automated Security Audits" \
@@ -162,8 +163,9 @@ jobs:
       # -------------------------------------------------------------
       - name: Importar Semgrep a DefectDojo
         run: |
-          curl -s -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
+            -H "ngrok-skip-browser-warning: true" \
             -F "product_id=${{ env.PRODUCT_ID }}" \
             -F "scan_type=Semgrep JSON Report" \
             -F "engagement_name=CI/CD Automated Security Audits" \
@@ -175,8 +177,9 @@ jobs:
       # -------------------------------------------------------------
       - name: Importar Trivy a DefectDojo
         run: |
-          curl -s -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
+            -H "ngrok-skip-browser-warning: true" \
             -F "product_id=${{ env.PRODUCT_ID }}" \
             -F "scan_type=Trivy Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
@@ -188,8 +191,9 @@ jobs:
       # -------------------------------------------------------------
       - name: Importar Gitleaks a DefectDojo
         run: |
-          curl -s -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
+            -H "ngrok-skip-browser-warning: true" \
             -F "product_id=${{ env.PRODUCT_ID }}" \
             -F "scan_type=Gitleaks Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
