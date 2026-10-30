@@ -10,13 +10,13 @@ env:
   DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/devops-portfolio
   HELM_RELEASE_NAME: mi-app
   K8S_NAMESPACE: devops-portfolio
-  DEFECTDOJO_URL: ${{ secrets.DEFECTDOJO_URL }}         # ej. http://tu-defectdojo.com:8080
-  DEFECTDOJO_TOKEN: ${{ secrets.DEFECTDOJO_API_KEY }}     # Token API v2
-  PRODUCT_ID: "1"                                         # ID del producto 'Notes App'
+  DEFECTDOJO_URL: ${{ secrets.DEFECTDOJO_URL }}
+  DEFECTDOJO_TOKEN: ${{ secrets.DEFECTDOJO_API_KEY }}
+  PRODUCT_NAME: "Notes App"                                # <-- CAMBIO CLAVE ACÁ
 
 jobs:
   # =========================================================================
-  # FASE 1: BUILD & PACKAGE (Construcción de Imagen Inmutable)
+  # FASE 1: BUILD & PACKAGE
   # =========================================================================
   build-and-package:
     name: "Fase 1: Build & Package (Imagen Inmutable)"
@@ -80,7 +80,7 @@ jobs:
           helm template ${{ env.HELM_RELEASE_NAME }} ./devops-portfolio -f devops-portfolio/values-prod.yaml > manifests-rendered-prod.yaml
 
       # -------------------------------------------------------------
-      # 2A. THREAGILE THREAT MODELING (TP14 - Generación de JSON)
+      # 2A. THREAGILE THREAT MODELING
       # -------------------------------------------------------------
       - name: Ejecutar Threagile Threat Model Analysis
         uses: threagile/run-threagile-action@v1
@@ -90,7 +90,7 @@ jobs:
         continue-on-error: true
 
       # -------------------------------------------------------------
-      # 2B. SEMGREP SAST (TP15 - Generación de JSON)
+      # 2B. SEMGREP SAST
       # -------------------------------------------------------------
       - name: Ejecutar Semgrep SAST
         run: |
@@ -98,7 +98,7 @@ jobs:
           semgrep scan --config=p/owasp-top-10 --config=p/python --config=p/dockerfile --json -o reports-json/semgrep-results.json || true
 
       # -------------------------------------------------------------
-      # 2C. TRIVY CONTAINER & SCA (TP16 - Generación de JSON)
+      # 2C. TRIVY CONTAINER & SCA
       # -------------------------------------------------------------
       - name: Ejecutar Trivy Container Scan
         uses: aquasecurity/trivy-action@master
@@ -109,7 +109,7 @@ jobs:
           exit-code: '0'
 
       # -------------------------------------------------------------
-      # 2D. GITLEAKS SECRET SCANNING (TP17 - Generación de JSON)
+      # 2D. GITLEAKS SECRET SCANNING
       # -------------------------------------------------------------
       - name: Ejecutar Gitleaks CLI
         run: |
@@ -119,7 +119,7 @@ jobs:
           gitleaks detect --source . --report-format json --report-path reports-json/gitleaks-report.json || true
 
       # -------------------------------------------------------------
-      # Publicar Artefactos de Reportes JSON para la Fase 3
+      # Publicar Artefactos
       # -------------------------------------------------------------
       - name: Publicar Artefacto de Reportes JSON
         if: always()
@@ -152,7 +152,7 @@ jobs:
           curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
-            -F "product_id=${{ env.PRODUCT_ID }}" \
+            -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=Generic Findings Import" \
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
@@ -166,7 +166,7 @@ jobs:
           curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
-            -F "product_id=${{ env.PRODUCT_ID }}" \
+            -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=Semgrep JSON Report" \
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
@@ -180,7 +180,7 @@ jobs:
           curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
-            -F "product_id=${{ env.PRODUCT_ID }}" \
+            -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=Trivy Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
@@ -194,7 +194,7 @@ jobs:
           curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
-            -F "product_id=${{ env.PRODUCT_ID }}" \
+            -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=Gitleaks Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
             -F "auto_create_context=true" \
@@ -206,7 +206,7 @@ jobs:
           echo "Los reportes de OWASP ZAP (TP13C), Threagile (TP14), Semgrep (TP15), Trivy (TP16) y Gitleaks (TP17) han sido procesados, desduplicados y cargados exitosamente en la instancia de DefectDojo." >> $GITHUB_STEP_SUMMARY
 
   # =========================================================================
-  # FASE 4: RELEASE & DEPLOY (Publicación y Despliegue Post-Aprobación)
+  # FASE 4: RELEASE & DEPLOY
   # =========================================================================
   deploy-k8s-helm:
     name: "Fase 4: Release & Deploy Helm K8s"
@@ -242,4 +242,3 @@ jobs:
       - name: Despliegue con Helm en Kubernetes
         run: |
           echo "Desplegando Helm Chart en Kubernetes..."
-          # helm upgrade --install ${{ env.HELM_RELEASE_NAME }} ./devops-portfolio -n ${{ env.K8S_NAMESPACE }}
