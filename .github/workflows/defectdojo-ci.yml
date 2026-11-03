@@ -1,6 +1,7 @@
 name: CI/CD Pipeline - Notes App DevSecOps con DefectDojo (4 Fases)
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main, develop ]
   pull_request:
