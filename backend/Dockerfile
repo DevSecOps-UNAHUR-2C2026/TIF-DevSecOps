@@ -24,9 +24,12 @@ COPY app.py .
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
-# Usuario no-root
-RUN useradd --create-home appuser && chown -R appuser /app
-USER appuser
+# Usuario no-root con UID numérico (OWASP ASVS V5.2.1)
+RUN groupadd -g 10001 appuser && \
+    useradd -u 10001 -g appuser --create-home -d /app appuser && \
+    chown -R appuser:appuser /app
+
+USER 10001
 
 EXPOSE 5000
 ENTRYPOINT ["./entrypoint.sh"]
