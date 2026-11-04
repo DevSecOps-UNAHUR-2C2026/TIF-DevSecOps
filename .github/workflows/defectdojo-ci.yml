@@ -120,14 +120,14 @@ jobs:
           gitleaks detect --source . --report-format json --report-path reports-json/gitleaks-report.json || true
 
       # -------------------------------------------------------------
-      # 2E. HADOLINT - DOCKERFILE LINTING (Agregado)
+      # 2E. HADOLINT - DOCKERFILE LINTING
       # -------------------------------------------------------------
       - name: Ejecutar Hadolint
         run: |
           docker run --rm -i hadolint/hadolint hadolint -f json - < ./backend/Dockerfile > reports-json/hadolint.json || true
 
       # -------------------------------------------------------------
-      # 2F. CHECKOV - IAC Y CONFIGURACIONES (Agregado)
+      # 2F. CHECKOV - IAC Y CONFIGURACIONES
       # -------------------------------------------------------------
       - name: Ejecutar Checkov
         run: |
@@ -135,7 +135,7 @@ jobs:
           checkov -d ./backend --framework dockerfile -o json > reports-json/checkov.json || true
 
       # -------------------------------------------------------------
-      # 2G. SYFT - GENERACIÓN DE SBOM (Agregado)
+      # 2G. SYFT - GENERACIÓN DE SBOM
       # -------------------------------------------------------------
       - name: Generar SBOM con Syft
         run: |
@@ -300,6 +300,21 @@ jobs:
           docker tag ${{ env.DOCKER_IMAGE }}:${{ github.sha }} ${{ env.DOCKER_IMAGE }}:latest
           docker push ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
           docker push ${{ env.DOCKER_IMAGE }}:latest
+
+      # -------------------------------------------------------------
+      # FIRMA CRIPTOGRÁFICA DE LA IMAGEN CON COSIGN
+      # -------------------------------------------------------------
+      - name: Instalar Cosign
+        uses: sigstore/cosign-installer@v3.5.0
+
+      - name: Firmar imagen Docker con Cosign
+        env:
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+        run: |
+          echo "${COSIGN_PRIVATE_KEY}" > cosign.key
+          cosign sign --key cosign.key -y ${{ env.DOCKER_IMAGE }}:${{ github.sha }}
+          cosign sign --key cosign.key -y ${{ env.DOCKER_IMAGE }}:latest
 
       - name: Despliegue con Helm en Kubernetes
         run: |
