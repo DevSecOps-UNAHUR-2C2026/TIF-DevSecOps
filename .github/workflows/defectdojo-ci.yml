@@ -168,104 +168,115 @@ jobs:
           name: security-json-reports
           path: reports-json
 
+      # IMPORTANTE: Se cambió a reimport-scan y se agregó test_title a TODAS las herramientas
       - name: Importar Threagile Threat Model a DefectDojo
         run: |
-          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/reimport-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
             -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=Generic Findings Import" \
             -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "test_title=Threagile - Threat Modeling" \
             -F "auto_create_context=true" \
+            -F "deduplication_on_engagement=true" \
             -F "file=@reports-json/threagile-results.json"
 
       - name: Importar Semgrep a DefectDojo
         run: |
-          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/reimport-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
             -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=Semgrep JSON Report" \
             -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "test_title=Semgrep - SAST" \
             -F "auto_create_context=true" \
+            -F "deduplication_on_engagement=true" \
             -F "file=@reports-json/semgrep-results.json"
 
       - name: Importar Trivy a DefectDojo
         run: |
-          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/reimport-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
             -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=Trivy Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "test_title=Trivy - Imagen Docker" \
             -F "auto_create_context=true" \
+            -F "deduplication_on_engagement=true" \
             -F "file=@reports-json/trivy-container-results.json"
 
       - name: Importar Gitleaks a DefectDojo
         run: |
-          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/reimport-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
             -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=Gitleaks Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "test_title=Gitleaks - Secret Scanning" \
             -F "auto_create_context=true" \
+            -F "deduplication_on_engagement=true" \
             -F "file=@reports-json/gitleaks-report.json"
 
       - name: Importar OWASP ZAP a DefectDojo
         run: |
-          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/reimport-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
             -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=ZAP Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "test_title=OWASP ZAP - DAST" \
             -F "auto_create_context=true" \
+            -F "deduplication_on_engagement=true" \
             -F "file=@reports-json/zap-results.xml"
 
-      # -------------------------------------------------------------
-      # Importación de Nuevas Herramientas (Hadolint, Checkov, Syft)
-      # -------------------------------------------------------------
       - name: Importar Hadolint a DefectDojo
         run: |
-          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/reimport-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
             -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=Hadolint Dockerfile check" \
             -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "test_title=Hadolint - Linting" \
             -F "auto_create_context=true" \
-            -F "close_old_findings=true" \
+            -F "deduplication_on_engagement=true" \
             -F "file=@reports-json/hadolint.json"
 
       - name: Importar Checkov a DefectDojo
         run: |
-          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/reimport-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
             -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=Checkov Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "test_title=Checkov - IaC" \
             -F "auto_create_context=true" \
-            -F "close_old_findings=true" \
+            -F "deduplication_on_engagement=true" \
             -F "file=@reports-json/checkov.json"
 
       - name: Importar Syft (SBOM) a DefectDojo
         run: |
-          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/import-scan/" \
+          curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/reimport-scan/" \
             -H "Authorization: Token ${{ env.DEFECTDOJO_TOKEN }}" \
             -H "ngrok-skip-browser-warning: true" \
             -F "product_name=${{ env.PRODUCT_NAME }}" \
             -F "scan_type=CycloneDX Scan" \
             -F "engagement_name=CI/CD Automated Security Audits" \
+            -F "test_title=Syft - SBOM" \
             -F "auto_create_context=true" \
-            -F "close_old_findings=true" \
+            -F "deduplication_on_engagement=true" \
             -F "file=@reports-json/sbom.json"
 
       - name: Resumen de Centralización en GitHub
         run: |
           echo "### Centralización de Vulnerabilidades en DefectDojo :shield:" >> $GITHUB_STEP_SUMMARY
-          echo "Los reportes de ZAP, Threagile, Semgrep, Trivy, Gitleaks, Hadolint, Checkov y el SBOM de Syft han sido procesados y cargados exitosamente." >> $GITHUB_STEP_SUMMARY
+          echo "Los reportes de ZAP, Threagile, Semgrep, Trivy, Gitleaks, Hadolint, Checkov y el SBOM de Syft han sido procesados y cargados exitosamente usando reimport-scan." >> $GITHUB_STEP_SUMMARY
 
   # =========================================================================
   # FASE 4: RELEASE & DEPLOY
