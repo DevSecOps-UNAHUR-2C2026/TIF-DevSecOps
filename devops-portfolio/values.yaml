@@ -82,6 +82,9 @@ ingress:
     # través del Ingress). Sólo pasaba desapercibido en "/" del frontend,
     # porque ahí reescribir a "/" no cambia nada.
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "Content-Security-Policy: frame-ancestors 'none';";
     nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
 
 # ── Monitoreo (opcional) ──────────────────────────────────
