@@ -49,7 +49,7 @@ jobs:
   # FASE 2: AUDITORÍAS DE CIBERSEGURIDAD Y GENERACIÓN DE REPORTES
   # =========================================================================
   security-audits:
-    name: "Fase 2: Auditorías (SAST, SCA, IaC y Secretos)"
+    name: "Fase 2: Auditorías (SAST, DAST, SCA, IaC y Secretos)"
     runs-on: ubuntu-latest
     needs: [build-and-package]
     steps:
@@ -59,7 +59,9 @@ jobs:
           fetch-depth: 0
 
       - name: Crear carpeta para reportes
-        run: mkdir -p reports-json
+        run: |
+          mkdir -p reports-json
+          chmod 777 reports-json
 
       - name: Descargar Artefacto de Imagen
         uses: actions/download-artifact@v4
@@ -143,6 +145,33 @@ jobs:
           syft docker:${{ env.DOCKER_IMAGE }}:${{ github.sha }} -o cyclonedx-json=reports-json/sbom.json
 
       # -------------------------------------------------------------
+      # 2H. OWASP ZAP - DAST (BASELINE SCAN)
+      # -------------------------------------------------------------
+      - name: Levantar aplicación para OWASP ZAP
+        run: |
+          docker compose up -d --build
+          for i in {1..15}; do
+            if curl -s -o /dev/null http://localhost; then
+              echo "Aplicación lista en http://localhost"
+              break
+            fi
+            echo "Esperando a que la aplicación responda..."
+            sleep 3
+          done
+
+      - name: Ejecutar OWASP ZAP (Baseline Scan)
+        run: |
+          docker run --rm --network="host" \
+            -v "${{ github.workspace }}/reports-json:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://localhost -x zap-results.xml || true
+
+      - name: Bajar contenedores de DAST
+        if: always()
+        run: |
+          docker compose down -v
+
+      # -------------------------------------------------------------
       # Publicar Artefactos
       # -------------------------------------------------------------
       - name: Publicar Artefacto de Reportes
@@ -168,7 +197,7 @@ jobs:
           name: security-json-reports
           path: reports-json
 
-      # IMPORTANTE: Se cambió a reimport-scan y se agregó test_title a TODAS las herramientas
+      # IMPORTANTE: Se cambió a reimport-scan y se agregó test_title y close_old_findings a TODAS las herramientas
       - name: Importar Threagile Threat Model a DefectDojo
         run: |
           curl -i -X POST "${{ env.DEFECTDOJO_URL }}/api/v2/reimport-scan/" \
@@ -180,6 +209,7 @@ jobs:
             -F "test_title=Threagile - Threat Modeling" \
             -F "auto_create_context=true" \
             -F "deduplication_on_engagement=true" \
+            -F "close_old_findings=true" \
             -F "file=@reports-json/threagile-results.json"
 
       - name: Importar Semgrep a DefectDojo
@@ -193,6 +223,7 @@ jobs:
             -F "test_title=Semgrep - SAST" \
             -F "auto_create_context=true" \
             -F "deduplication_on_engagement=true" \
+            -F "close_old_findings=true" \
             -F "file=@reports-json/semgrep-results.json"
 
       - name: Importar Trivy a DefectDojo
@@ -206,6 +237,7 @@ jobs:
             -F "test_title=Trivy - Imagen Docker" \
             -F "auto_create_context=true" \
             -F "deduplication_on_engagement=true" \
+            -F "close_old_findings=true" \
             -F "file=@reports-json/trivy-container-results.json"
 
       - name: Importar Gitleaks a DefectDojo
@@ -219,6 +251,7 @@ jobs:
             -F "test_title=Gitleaks - Secret Scanning" \
             -F "auto_create_context=true" \
             -F "deduplication_on_engagement=true" \
+            -F "close_old_findings=true" \
             -F "file=@reports-json/gitleaks-report.json"
 
       - name: Importar OWASP ZAP a DefectDojo
@@ -232,6 +265,7 @@ jobs:
             -F "test_title=OWASP ZAP - DAST" \
             -F "auto_create_context=true" \
             -F "deduplication_on_engagement=true" \
+            -F "close_old_findings=true" \
             -F "file=@reports-json/zap-results.xml"
 
       - name: Importar Hadolint a DefectDojo
@@ -245,6 +279,7 @@ jobs:
             -F "test_title=Hadolint - Linting" \
             -F "auto_create_context=true" \
             -F "deduplication_on_engagement=true" \
+            -F "close_old_findings=true" \
             -F "file=@reports-json/hadolint.json"
 
       - name: Importar Checkov a DefectDojo
@@ -258,6 +293,7 @@ jobs:
             -F "test_title=Checkov - IaC" \
             -F "auto_create_context=true" \
             -F "deduplication_on_engagement=true" \
+            -F "close_old_findings=true" \
             -F "file=@reports-json/checkov.json"
 
       - name: Importar Syft (SBOM) a DefectDojo
@@ -271,6 +307,7 @@ jobs:
             -F "test_title=Syft - SBOM" \
             -F "auto_create_context=true" \
             -F "deduplication_on_engagement=true" \
+            -F "close_old_findings=true" \
             -F "file=@reports-json/sbom.json"
 
       - name: Resumen de Centralización en GitHub
